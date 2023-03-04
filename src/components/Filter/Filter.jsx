@@ -1,18 +1,22 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import { useDispatch } from 'react-redux';
+import { setFilter } from '../../redux/features/filterSlice';
 import { LabelStyled, InputStyled } from '../ContactForm/ContactForm.Styled';
 import { SpanStyled } from './Filter.styled';
-const Filter = props => {
+
+const Filter = () => {
+  const dispath = useDispatch();
+
+  const filterHendler = e => {
+    dispath(setFilter(e.currentTarget.value));
+  };
+
   return (
     <LabelStyled>
       <SpanStyled>Find contacts by name:</SpanStyled>
-      <InputStyled name="filter" onChange={props.onInputHendler}></InputStyled>
+      <InputStyled name="filter" onChange={filterHendler}></InputStyled>
     </LabelStyled>
   );
-};
-
-Filter.propTypes = {
-  onInputHendler: PropTypes.func.isRequired,
 };
 
 export default Filter;

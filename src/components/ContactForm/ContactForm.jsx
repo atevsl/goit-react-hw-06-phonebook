@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import shortid from 'shortid';
-import PropTypes from 'prop-types';
+import { useDispatch, useSelector } from 'react-redux';
+import { addContact, getContactList } from 'redux/features/contactListSlice';
 import {
   FormStyled,
   ButtonStyled,
@@ -9,26 +10,41 @@ import {
   Headers,
 } from './ContactForm.Styled';
 
-const ContactForm = ({ onSubmit }) => {
+const ContactForm = () => {
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
+  const dispatch = useDispatch();
+  const contactList = useSelector(getContactList);
+
   const onNameChange = e => {
     setName(e.currentTarget.value);
   };
+
   const onNumberChange = e => {
     setNumber(e.currentTarget.value);
   };
+
   const onSubmitHendler = e => {
     e.preventDefault();
-    const newContact = {
-      name,
-      id: shortid.generate(),
-      number,
-    };
-    onSubmit(newContact);
+
+    if (
+      contactList.some(
+        contact => contact.name.toLowerCase() === name.toLowerCase()
+      )
+    ) {
+      alert(`name: ${name}, is already in contacts`);
+      return;
+    } else if (contactList.some(contact => contact.number === number)) {
+      alert(`number: ${number}, is already in contacts`);
+      return;
+    } else {
+      dispatch(addContact({ id: shortid.generate(), name, number }));
+    }
+
     setName('');
     setNumber('');
   };
+
   return (
     <>
       <Headers>Phonebook</Headers>
@@ -62,10 +78,6 @@ const ContactForm = ({ onSubmit }) => {
       </FormStyled>
     </>
   );
-};
-
-ContactForm.propTypes = {
-  onSubmit: PropTypes.func.isRequired,
 };
 
 export default ContactForm;
